@@ -1,0 +1,45 @@
+name: CD for Develop and Release branches
+
+on:
+  push:
+    branches:
+      - develop
+      - release/**
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Branch Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+      - name: Install pnpm and dependencies
+        uses: ./.github/actions/pnpm-install
+      - name: Branch checks
+        uses: ./.github/actions/branch-checks
+
+  build:
+    name: Apply Version and Build webapp
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+      - name: Install pnpm and dependencies
+        uses: ./.github/actions/pnpm-install
+      - name: Apply version
+        uses: ./.github/actions/apply-version
+      - name: Build webapp
+        uses: ./.github/actions/build-webapp
+      - name: Upload build artifacts
+        uses: ./.github/actions/upload-artifacts
+
+  deploy:
+    name: Deploy Build
+    if: github.ref == 'refs/jeads/develop'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3

@@ -1,0 +1,58 @@
+name: Publish App Release
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+env:
+  REPO_NAME: ${{ github.event.repository.name }}
+  REPO_OWNER: ${{ github.event.repository.owner.login }}
+
+jobs:
+  publish-release:
+    name: Publish a new release
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Extract version from branch (for release branches)
+        if: startsWith(github.event.pull_request.head.ref, 'release/')
+        run: |
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          VERSION=${BRANCH_NAME#release/}
+          echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Extract version from branch name (for hotfix branches)
+        if: startsWith(github.event.pull_request.head.ref, 'hotfix/')
+        run: |
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          VERSION=${BRANCH_NAME#hotfix/}
+          echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Checkout source
+        uses: actions/checkout@v3
+      - name: Bump version and push tag
+        uses: mathieudutour/github-tag-action@v6.1
+        id: tag_version
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ env.RELEASE_VERSION }}
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+          generateReleaseNotes: true
+      - name: Create a pull request
+        uses: thomaseizinger/create-pull-request@1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          head: main
+          base: develop
+          title: Merge main into develop
+          body: |
+            This PR merges the main branch back into develop.
+            This happens to ensure that the updates that happened on the release branch, i.e. CHANGELOG and manifest updates are also present on the dev branch.

@@ -1,0 +1,32 @@
+name: Install PNPM
+description: Install node, pnpm, and dependencies
+
+runs:
+  using: composite
+  steps:
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      id: pnpm-install
+      with:
+        version: 8
+        run_install: false
+
+    - name: Setup node
+      uses: actions/setup-node@v3
+      with:
+        cache: 'pnpm'
+        node-version-file: .nvmrc
+
+    # Caching node_modules is not recommended by `actions/cache@v3`
+    - name: Cache node_modules
+      uses: actions/cache@v3
+      id: cache-node-modules
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-node_modules-
+
+    - name: Install packages
+      run: pnpm install
+      shell: bash

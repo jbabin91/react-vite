@@ -1,0 +1,40 @@
+name: Draft App Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  draft-release:
+    name: Draft a new release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_WORKFLOW_TOKEN }}
+      - name: Extract version from package.json
+        uses: sergeysova/jq-action@v2
+        id: get_version
+        with:
+          cmd: jq .version package.json -r
+      - name: Create a release branch
+        run: git checkout -b release/${{ steps.get_version.outputs.value }}
+      - name: Push new branch
+        run: git push origin release/${{ steps.get_version.outputs.value }}
+      - name: Checkout release branch
+        uses: actions/checkout@v3
+        with:
+          ref: release/${{ steps.get_version.outputs.value }}
+      - name: Create a pull request
+        uses: thomaseizinger/create-pull-request@1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          head: release/${{ steps.get_version.outputs.value }}
+          base: main
+          title: Release version ${{ steps.get_version.outputs.value }}
+          body: |
+            Hi @${{ github.actor }}!
+            This PR was created in response to a manual trigger of the release workflow here: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}.
+            Merging this PR will create a GitHub release and upload any assets that are created as part of the release build.

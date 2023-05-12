@@ -1,0 +1,26 @@
+name: Branch checks on non-develop Branches
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - develop
+      - release/**
+      - dependabot/**
+  workflow_dispatch:
+
+jobs:
+  ci:
+    name: Branch Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+      - name: Install pnpm and dependencies
+        uses: ./.github/actions/pnpm-install
+      - name: Run branch checks
+        uses: ./.github/actions/branch-checks
+      - name: Build webapp
+        uses: ./.github/actions/build-webapp
+      - name: Run test suite
+        uses: ./.github/actions/tests

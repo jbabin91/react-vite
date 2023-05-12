@@ -1,0 +1,9 @@
+name: Build Webapp
+description: Build web application
+
+runs:
+  using: composite
+  steps:
+    - name: Build Webapp
+      run: pnpm build
+      shell: bash

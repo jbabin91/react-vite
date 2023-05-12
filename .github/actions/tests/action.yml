@@ -1,0 +1,9 @@
+name: Run Test Suite
+description: Run test suite to validate app
+
+runs:
+  using: composite
+  steps:
+    - name: Run Test Suite
+      run: pnpm test
+      shell: bash

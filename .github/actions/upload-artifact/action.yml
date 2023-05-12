@@ -1,0 +1,11 @@
+name: Upload Build Artifacts
+description: Upload build artifacts
+
+runs:
+  using: composite
+  steps:
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-dir
+        path: dist
