@@ -10,3 +10,5 @@ __mocks__/
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+
+.commitlintrc
