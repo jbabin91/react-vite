@@ -15,7 +15,7 @@ runs:
       uses: actions/setup-node@v3
       with:
         cache: 'pnpm'
-        node-version-file: .nvmrc
+        node-version: 18
 
     # Caching node_modules is not recommended by `actions/cache@v3`
     - name: Cache node_modules
