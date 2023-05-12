@@ -3,4 +3,4 @@
 
 pnpm tsc
 pnpm build
-# pnpm test
+pnpm test

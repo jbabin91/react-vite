@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import path from 'node:path';
 
 import react from '@vitejs/plugin-react-swc';
@@ -28,5 +29,20 @@ export default defineConfig({
   },
   server: {
     https: true,
+    proxy: {
+      '/api/': {
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        target: 'https://jsonplaceholder.typicode.com/',
+      },
+    },
+  },
+  test: {
+    cache: {
+      dir: './node_modules/.vitest',
+    },
+    environment: 'jsdom',
+    globals: true,
+    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
   },
 });
