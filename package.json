@@ -15,8 +15,8 @@
     "tsc": "tsc --noEmit"
   },
   "lint-staged": {
-    "*": "prettier -uwl --cache .",
-    "*.ts?(x)": "eslint --cache --fix ."
+    "*": "prettier -uc --cache .",
+    "*.ts?(x)": "eslint --cache ."
   },
   "dependencies": {
     "@tanstack/react-query": "^4.29.5",
