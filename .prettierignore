@@ -1,0 +1,12 @@
+node_modules/
+
+# Ignore artifacts:
+coverage/
+dist/
+public/
+__mocks__/
+
+# Ignore package locks
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
