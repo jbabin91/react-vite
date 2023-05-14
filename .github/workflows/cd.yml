@@ -30,7 +30,7 @@ jobs:
           echo "ENVIRONMENT_NAME=test" >> $GITHUB_ENV
       - name: Set output
         id: set_env
-        run: echo "::set-output name=current_env::${{ env.ENVIRONMENT_NAME }}"
+        run: echo "current_env=${{ env.ENVIRONMENT_NAME }}" >> $GITHUB_OUTPUT
 
   lint:
     name: Branch Checks
