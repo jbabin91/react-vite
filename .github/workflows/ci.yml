@@ -8,11 +8,14 @@ on:
       - release/**
       - dependabot/**
   workflow_dispatch:
+env:
+  VITE_APP_NAME: ${{ vars.VITE_APP_NAME }}
 
 jobs:
   ci:
     name: Branch Checks
     runs-on: ubuntu-latest
+    environment: develop
     steps:
       - name: Checkout source
         uses: actions/checkout@v3

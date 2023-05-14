@@ -1,16 +1,42 @@
-name: CD for Develop and Release branches
+name: CD for Develop, Test, and Release branches
 
 on:
   push:
     branches:
       - develop
+      - test
       - release/**
   workflow_dispatch:
+env:
+  VITE_APP_NAME: ${{ vars.VITE_APP_NAME }}
 
 jobs:
+  set-environment:
+    runs-on: ubuntu-latest
+    outputs:
+      current_env: ${{ steps.set_env.outputs.current_env }}
+    steps:
+      - name: Check if production
+        if: endsWith(github.ref, '/main')
+        run: |
+          echo "ENVIRONMENT_NAME=production" >> $GITHUB_ENV
+      - name: Check if develop
+        if: endsWith(github.ref, '/develop')
+        run: |
+          echo "ENVIRONMENT_NAME=develop" >> $GITHUB_ENV
+      - name: Check if test
+        if: endsWith(github.ref, '/test')
+        run: |
+          echo "ENVIRONMENT_NAME=test" >> $GITHUB_ENV
+      - name: Set output
+        id: set_env
+        run: echo "::set-output name=current_env::${{ env.ENVIRONMENT_NAME }}"
+
   lint:
     name: Branch Checks
+    needs: set-environment
     runs-on: ubuntu-latest
+    environment: ${{ needs.set-environment.outputs.current_env }}
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
@@ -23,6 +49,7 @@ jobs:
     name: Apply Version and Build webapp
     needs: lint
     runs-on: ubuntu-latest
+    environment: ${{ needs.set-environment.outputs.current_env }}
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
@@ -40,6 +67,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     needs: build
     runs-on: ubuntu-latest
+    environment: ${{ needs.set-environment.outputs.current_env }}
     steps:
       - name: Checkout source
         uses: actions/checkout@v3

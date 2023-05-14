@@ -1,10 +1,10 @@
-import './App.css';
+import '@/App.css';
 
 import { useState } from 'react';
 
 import viteLogo from '/vite.svg';
-
-import reactLogo from './assets/react.svg';
+import reactLogo from '@/assets/react.svg';
+import { env } from '@/env';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -32,6 +32,7 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
       <p>testing changes</p>
+      <p>{env.VITE_APP_NAME}</p>
     </>
   );
 }

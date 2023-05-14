@@ -8,41 +8,44 @@ import mkcert from 'vite-plugin-mkcert';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [
-    react(),
-    tsconfigPaths(),
-    checker({
-      eslint: {
-        lintCommand: 'eslint .',
-      },
-      typescript: true,
-    }),
-    mkcert({
-      source: 'coding',
-    }),
-  ],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
-  server: {
-    https: true,
-    proxy: {
-      '/api/': {
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-        target: 'https://jsonplaceholder.typicode.com/',
+export default defineConfig(() => {
+  return {
+    plugins: [
+      react(),
+      tsconfigPaths(),
+      checker({
+        eslint: {
+          lintCommand: 'eslint .',
+        },
+        typescript: true,
+      }),
+      mkcert({
+        source: 'coding',
+      }),
+    ],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
       },
     },
-  },
-  test: {
-    cache: {
-      dir: './node_modules/.vitest',
+    server: {
+      https: true,
+      proxy: {
+        '/api/': {
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, ''),
+          target:
+            process.env.API_URL ?? 'https://jsonplaceholder.typicode.com/',
+        },
+      },
     },
-    environment: 'jsdom',
-    globals: true,
-    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-  },
+    test: {
+      cache: {
+        dir: './node_modules/.vitest',
+      },
+      environment: 'jsdom',
+      globals: true,
+      include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    },
+  };
 });
