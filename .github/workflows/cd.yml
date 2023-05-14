@@ -47,7 +47,7 @@ jobs:
 
   build:
     name: Apply Version and Build webapp
-    needs: lint
+    needs: [lint, set-environment]
     runs-on: ubuntu-latest
     environment: ${{ needs.set-environment.outputs.current_env }}
     steps:
@@ -65,7 +65,7 @@ jobs:
   deploy:
     name: Deploy Build
     if: github.ref == 'refs/heads/develop'
-    needs: build
+    needs: [build, set-environment]
     runs-on: ubuntu-latest
     environment: ${{ needs.set-environment.outputs.current_env }}
     steps:
