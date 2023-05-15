@@ -8,6 +8,7 @@ on:
       - release/**
       - dependabot/**
   workflow_dispatch:
+
 env:
   VITE_APP_NAME: ${{ vars.VITE_APP_NAME }}
 
