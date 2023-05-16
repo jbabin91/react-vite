@@ -47,6 +47,7 @@ jobs:
         run: |
           git add package.json
           git commit -m "chore(version): Bump version to ${{ inputs.version }}"
+          git push origin bump/${{ inputs.version }}
       - name: Create a pull request
         uses: thomaseizinger/create-pull-request@1.0.0
         env:
